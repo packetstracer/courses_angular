@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core'
+import { Injectable, EventEmitter } from '@angular/core'
 import { Subject, Observable } from "rxjs"
 
-import { IEvent } from './event.model'
+import { IEvent, ISession } from './event.model'
 
 @Injectable()
 export class EventService {
@@ -44,6 +44,32 @@ export class EventService {
 
   //   return subject
   // }
+
+  saveEventSession (eventId: any, session: ISession) {
+    const event = EVENTS.find(event => event.id = eventId)
+
+    session.id = event.sessions.length + 1
+
+    event && event.sessions.push(session)
+  }
+
+  searchSessions (sessionName: string) {
+    const term = sessionName.toLowerCase()
+    const emitter = new EventEmitter(true)
+    let foundSessions: ISession[] = []
+
+    EVENTS.forEach(event =>
+      foundSessions = foundSessions.concat(
+        event.sessions
+          .filter(session => session.name.toLowerCase().indexOf(term) >= 0)
+          .map(session => ({ ...session, eventId: event.id }))
+      )
+    )
+
+    setTimeout(() => emitter.emit(foundSessions), 100)
+
+    return emitter
+  }
 }
 
 const EVENTS: IEvent[] = [
@@ -156,29 +182,6 @@ const EVENTS: IEvent[] = [
         ultra-real-time 5D Firebase back end, hosting platform, and wine recommendation engine.`,
         voters: ['bradgreen', 'igorminar', 'johnpapa']
       },
-      {
-        id: 3,
-        name: "Reading the Angular 4 Source",
-        presenter: "Patrick Stapleton",
-        duration: 2,
-        level: "Intermediate",
-        abstract: `Angular 4's source code may be over 25 million lines of code, but it's really
-        a lot easier to read and understand then you may think. Patrick Stapleton will talk
-        about his secretes for keeping up with the changes, and navigating around the code.`,
-        voters: ['martinfowler']
-      },
-      {
-        id: 4,
-        name: "Hail to the Lukas",
-        presenter: "Lukas Ruebbelke",
-        duration: 1,
-        level: "Beginner",
-        abstract: `In this session, Lukas will present the
-        secret to being awesome, and how he became the President
-        of the United States through his amazing programming skills,
-        showing how you too can be success with just attitude.`,
-        voters: ['bradgreen']
-      },
     ]
   },
   {
@@ -205,50 +208,6 @@ const EVENTS: IEvent[] = [
         into the internals of Angular 4, we'll see exactly how Elm powers
         the framework, and what you can do to take advantage of this knowledge.`,
         voters: ['bradgreen', 'martinfowler', 'igorminar']
-      },
-      {
-        id: 2,
-        name: "Angular and React together",
-        presenter: "Jamison Dance",
-        duration: 2,
-        level: "Intermediate",
-        abstract: `React v449.6 has just been released. Let's see how to use
-        this new version with Angular to create even more impressive applications.`,
-        voters: ['bradgreen', 'martinfowler']
-      },
-      {
-        id: 3,
-        name: "Redux Woes",
-        presenter: "Rob Wormald",
-        duration: 1,
-        level: "Intermediate",
-        abstract: `Everyone is using Redux for everything from Angular to React to
-        Excel macros, but you're still having trouble grasping it? We'll take a look
-        at how farmers use Redux when harvesting grain as a great introduction to
-        this game changing technology.`,
-        voters: ['bradgreen', 'martinfowler', 'johnpapa']
-      },
-      {
-        id: 4,
-        name: "ng-wat again!!",
-        presenter: "Shai Reznik",
-        duration: 1,
-        level: "Beginner",
-        abstract: `Let's take a look at some of the stranger pieces of Angular 4,
-        including neural net nets, Android in Androids, and using pipes with actual pipes.`,
-        voters: ['bradgreen', 'martinfowler', 'igorminar', 'johnpapa']
-      },
-      {
-        id: 5,
-        name: "Dressed for Success",
-        presenter: "Ward Bell",
-        duration: 2,
-        level: "Beginner",
-        abstract: `Being a developer in 2037 is about more than just writing bug-free code.
-        You also have to look the part. In this amazing expose, Ward will talk you through
-        how to pick out the right clothes to make your coworkers and boss not only
-        respect you, but also want to be your buddy.`,
-        voters: ['bradgreen', 'martinfowler']
       },
       {
         id: 6,
@@ -298,17 +257,6 @@ const EVENTS: IEvent[] = [
         happened in the last decade, but there is still much we can do to remove all
         war from the world, and Angular will be a key part of that effort.`,
         voters: ['bradgreen', 'igorminar', 'johnpapa']
-      },
-      {
-        id: 3,
-        name: "Using Angular with Androids",
-        presenter: "Dan Wahlin",
-        duration: 3,
-        level: "Advanced",
-        abstract: `Androids may do everything for us now, allowing us to spend all day playing
-        the latest Destiny DLC, but we can still improve the massages they give and the handmade
-        brie they make using Angular 4. This session will show you how.`,
-        voters: ['igorminar', 'johnpapa']
       },
     ]
   },

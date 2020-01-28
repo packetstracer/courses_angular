@@ -1,0 +1,16 @@
+<div class="row" *ngFor="let session of filteredSessions">
+  <collapsible-well>
+    <div well-title>
+      {{session.name}}
+      <i class="fa fa-thumbs-up" *ngIf="session.voters?.length > 3" style="color: red"></i>
+    </div>
+
+    <div well-content>
+      <h6>{{session.presenter}}</h6>
+      <span>Duration: {{session.duration | duration}}</span>
+      <br />
+      <span>Level: {{session.level}}</span>
+      <p>{{session.abstract}}</p>
+    </div>
+  </collapsible-well>
+</div>

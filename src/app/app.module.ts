@@ -9,16 +9,25 @@ import { EventThumbnailComponent } from './events/event-thumbnail.component'
 import { EventDetailsComponent } from './events/event-details/event-details.component'
 import { CreateEventComponent } from './events/create-event.component'
 import { CreateSessionComponent } from './events/event-details/create-session.component'
+import { SessionsListComponent } from './events/event-details/sessions-list.component'
+import { CollabsibleWellComponent } from './common/collapsible-well.component'
+import { SimpleModalComponent } from './common/simple-modal.component'
 import { NavBarComponent } from './nav/navbar.component'
 import { Error404Component } from './errors/error404.component'
 
+import { DurationPipe } from './common/duration.pipe'
+
 import { EventService } from './events/shared/event.service'
-import { ToastrService } from './common/toastr.service'
+import { TOASTR_TOKEN, Toastr } from './common/toastr.service'
+import { JQUERY_TOKEN } from "./common/jquery.service";
 import { AuthService } from './user/auth.service'
 import { EventRouteActivator } from './events/event-details/event-route-activator.service'
 import { EventListResolver } from './events/event-list-resolver.component'
 
 import { appRoutes } from "./routes"
+
+let toastr: Toastr = window['toaster']
+let jQuery = window['$']
 
 @NgModule({
   imports: [
@@ -34,12 +43,18 @@ import { appRoutes } from "./routes"
     EventDetailsComponent,
     CreateEventComponent,
     CreateSessionComponent,
+    SessionsListComponent,
+    CollabsibleWellComponent,
+    SimpleModalComponent,
     NavBarComponent,
-    Error404Component
+    Error404Component,
+
+    DurationPipe
   ],
   providers: [
     EventService,
-    ToastrService,
+    { provide: TOASTR_TOKEN, useValue: toastr },
+    { provide: JQUERY_TOKEN, useValue: jQuery },
     AuthService,
     EventRouteActivator,
     EventListResolver,

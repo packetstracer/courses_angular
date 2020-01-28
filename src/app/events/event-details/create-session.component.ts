@@ -1,14 +1,24 @@
-import { Component, OnInit } from '@angular/core'
-import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms'
-import { Router } from '@angular/router'
+import { Component, OnInit, Output, EventEmitter } from '@angular/core'
+import { FormGroup, Validators, FormControl } from '@angular/forms'
 
-import { ISession, IEvent } from '../shared/event.model'
+import { ISession } from '../shared/event.model'
 
 @Component({
   selector: 'create-session',
-  templateUrl: 'create-session.component.html'
+  templateUrl: 'create-session.component.html',
+  styles: [`
+    em { float: right; color: #E05E65; padding-left: 10px; }
+    .error input, .error select, .error textarea { background-color: #E3C3C5 }
+    .error ::-webkit-input-placeholder { color: #999; }
+    .error ::-moz-placeholder { color: #999; }
+    .error :-moz-placeholder { color: #999; }
+    .error :ms-input-placeholder { color: #999; }
+  `]
 })
 export class CreateSessionComponent implements OnInit {
+  @Output() newSession = new EventEmitter()
+  @Output() cancelSave = new EventEmitter()
+
   newSessionForm: FormGroup
 
   name: FormControl
@@ -17,20 +27,35 @@ export class CreateSessionComponent implements OnInit {
   level: FormControl
   abstract: FormControl
 
-  constructor (private fb: FormBuilder, private router: Router) {}
-
   ngOnInit () {
-    this.newSessionForm = this.fb.group({
-      name: ['', Validators.required],
-      presenter: ['', Validators.required],
-      duration: ['', Validators.required],
-      level: ['', Validators.required],
-      abstract: ['', [Validators.required, Validators.maxLength(400)]]
+    this.name = new FormControl('', Validators.required)
+    this.presenter = new FormControl('', Validators.required)
+    this.duration = new FormControl('', Validators.required)
+    this.level = new FormControl('', Validators.required)
+    this.abstract = new FormControl('', [
+      Validators.required,
+      Validators.maxLength(400),
+      this.restrictedWords(['foo', 'mike', 'peter'])
+    ])
+
+    this.newSessionForm = new FormGroup({
+      name: this.name,
+      presenter: this.presenter,
+      duration: this.duration,
+      level: this.level,
+      abstract: this.abstract
     })
   }
 
+  restrictedWords (words: string[]): any {
+    return (control: FormControl) => {
+      const foundWords = words.filter(word => control.value.includes(word))
+
+      return foundWords.length > 0 ? { restrictedWords: foundWords.join(', ') } : null
+    }
+  }
+
   createEventSession (formValues: any) {
-    console.log(formValues)
     const session: ISession = {
       id: undefined,
       name: formValues.name,
@@ -41,10 +66,10 @@ export class CreateSessionComponent implements OnInit {
       voters: []
     }
 
-    // this.router.navigate(['evemnts'])
+    this.newSession.emit(session)
   }
 
   cancel () {
-    this.router.navigate(['evemnts'])
+    this.cancelSave.emit()
   }
 }
